@@ -1,6 +1,6 @@
 # mcp-server-spidy MCP server
 
-a web cralwer for claude mcp
+a web crawler for claude mcp
 
 ## Components
 
@@ -8,7 +8,7 @@ a web cralwer for claude mcp
 
 The server implements a simple note storage system with:
 - Custom note:// URI scheme for accessing individual notes
-- Each note resource has a name, description and text/plain mimetype
+- Each note resource has a name, description, and text/plain mimetype
 
 ### Prompts
 
@@ -19,10 +19,10 @@ The server provides a single prompt:
 
 ### Tools
 
-The server implements one tool:
-- add-note: Adds a new note to the server
-  - Takes "name" and "content" as required string arguments
-  - Updates server state and notifies clients of resource changes
+The server implements two tools:
+- web-crawl: Crawls a website and saves the results to a text file
+  - Takes "url" and "output_file" as required string arguments
+  - Fetches the content from the specified URL and writes it to the specified text file
 
 ## Configuration
 
@@ -37,22 +37,11 @@ The server implements one tool:
 On MacOS: `~/Library/Application\ Support/Claude/claude_desktop_config.json`
 On Windows: `%APPDATA%/Claude/claude_desktop_config.json`
 
-<details>
-  <summary>Development/Unpublished Servers Configuration</summary>
-  ```
-  "mcpServers": {
-    "mcp-server-spidy": {
-      "command": "uv",
-      "args": [
-        "--directory",
-        "/Users/jrob/repos/spidy",
-        "run",
-        "mcp-server-spidy"
-      ]
-    }
-  }
-  ```
-</details>
+### Usage
+
+To use the web crawling tool, you can call it with the following parameters:
+- `url`: The URL of the website you want to crawl.
+- `output_file`: The name of the file where the crawled content will be saved.
 
 <details>
   <summary>Published Servers Configuration</summary>

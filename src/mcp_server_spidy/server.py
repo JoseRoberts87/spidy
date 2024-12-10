@@ -1,4 +1,5 @@
 import asyncio
+import aiohttp
 
 from mcp.server.models import InitializationOptions
 import mcp.types as types
@@ -101,15 +102,15 @@ async def handle_list_tools() -> list[types.Tool]:
     """
     return [
         types.Tool(
-            name="add-note",
-            description="Add a new note",
+            name="web-crawl",
+            description="Crawl a website and save results to a text file",
             inputSchema={
                 "type": "object",
                 "properties": {
-                    "name": {"type": "string"},
-                    "content": {"type": "string"},
+                    "url": {"type": "string"},
+                    "output_file": {"type": "string"},
                 },
-                "required": ["name", "content"],
+                "required": ["url", "output_file"],
             },
         )
     ]
@@ -122,28 +123,30 @@ async def handle_call_tool(
     Handle tool execution requests.
     Tools can modify server state and notify clients of changes.
     """
-    if name != "add-note":
-        raise ValueError(f"Unknown tool: {name}")
+    if name == "web-crawl":
+        return await crawl_website(arguments)
+    raise ValueError(f"Unknown tool: {name}")
 
-    if not arguments:
-        raise ValueError("Missing arguments")
+async def crawl_website(arguments: dict) -> list[types.TextContent]:
+    url = arguments.get("url")
+    output_file = arguments.get("output_file")
 
-    note_name = arguments.get("name")
-    content = arguments.get("content")
+    if not url or not output_file:
+        raise ValueError("Missing URL or output file")
 
-    if not note_name or not content:
-        raise ValueError("Missing name or content")
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as response:
+            if response.status != 200:
+                raise ValueError(f"Failed to crawl {url}: {response.status}")
+            content = await response.text()
 
-    # Update server state
-    notes[note_name] = content
-
-    # Notify clients that resources have changed
-    await server.request_context.session.send_resource_list_changed()
+    with open(output_file, 'w') as f:
+        f.write(content)
 
     return [
         types.TextContent(
             type="text",
-            text=f"Added note '{note_name}' with content: {content}",
+            text=f"Crawled {url} and saved results to {output_file}",
         )
     ]
 

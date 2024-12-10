@@ -1,10 +1,13 @@
 [project]
 name = "mcp-server-spidy"
-version = "0.1.0"
+version = "0.1.2"
 description = "a web cralwer for claude mcp"
 readme = "README.md"
 requires-python = ">=3.10"
-dependencies = [ "mcp>=1.1.1",]
+dependencies = [
+ "aiohttp>=3.11.10",
+ "mcp>=1.1.1",
+]
 [[project.authors]]
 name = "Jose Roberts"
 email = "webterpr@gmail.com"
@@ -12,6 +15,11 @@ email = "webterpr@gmail.com"
 [build-system]
 requires = [ "hatchling",]
 build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.4",
+]
 
 [project.scripts]
 mcp-server-spidy = "mcp_server_spidy:main"
